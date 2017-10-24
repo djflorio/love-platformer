@@ -1,3 +1,6 @@
+-- Each level will inherit from this class which itself inherits from Gamestate.
+-- This class is Gamestate but with function for loading up Tiled maps.
+
 local bump = require 'libs.bump.bump'
 local Gamestate = require 'libs.hump.gamestate'
 local Class = require 'libs.hump.class'
@@ -11,11 +14,11 @@ local LevelBase = Class{
     self.map = sti(mapFile, { 'bump' }) -- Use sti to open map file, tell sti we are using bump for collision handling
     self.world = bump.newWorld(32) -- Declare a world for collisons to occur in
     self.map:resize(love.graphics.getWidth(), love.graphics.getHeight()) -- Resize map to fill screen
-    self.map.bump_init(self.world) -- Initialize the bump array for the map
+    self.map:bump_init(self.world) -- Initialize the bump array for the map
 
     Entities:enter() -- Create the entities system.
-  end,
-  Entities = Entities, -- Make Entities a class variable for easy access.
+  end;
+  Entities = Entities; -- Make Entities a class variable for easy access.
   camera = camera
 }
 
@@ -31,7 +34,7 @@ function LevelBase:positionCamera(player, camera)
   local halfScreen = love.graphics.getWidth() / 2
 
   if player.x < (mapWidth - halfScreen) then
-    boundX = math.max(0, player.x - halfscreen)
+    boundX = math.max(0, player.x - halfScreen)
   else
     boundX = math.min(player.x - halfScreen, mapWidth - love.graphics.getWidth())
   end
