@@ -4,7 +4,7 @@
 
 If you like STI, consider tossing me a few monies via [**PayPal**][paypal].
 
-Simple Tiled Implementation is a [**Tiled**][Tiled] map loader and renderer designed for the *awesome* [**LÖVE**][LOVE] framework. Please read the [**documentation**][dox] to learn how it works, or check out this handy [**tutorial**][tut] I wrote! The tutorial might be a bit out of date so be sure to check the documentation if there are any issues.
+Simple Tiled Implementation is a [**Tiled**][Tiled] map loader and renderer designed for the *awesome* [**LÖVE**][LOVE] framework. Please read the [**documentation**][dox] to learn how it works!
 
 ## Quick Example
 
@@ -68,16 +68,14 @@ end
 
 function love.draw()
 	-- Draw the map and all objects within
-	love.graphics.setColor(255, 255, 255)
 	map:draw()
 
 	-- Draw Collision Map (useful for debugging)
-	love.graphics.setColor(255, 0, 0)
+	love.graphics.setColor(255, 0, 0, 255)
 	map:box2d_draw()
 
-	-- Please note that map:draw, map:box2d_draw, and map:bump_draw take
-	-- translate and scale arguments (tx, ty, sx, sy) for when you want to
-	-- grow, shrink, or reposition your map on screen.
+	-- Reset color
+	love.graphics.setColor(255, 255, 255, 255)
 end
 ```
 
@@ -92,6 +90,5 @@ This code is licensed under the [**MIT/X11 Open Source License**][MIT]. Check ou
 [Tiled]: http://www.mapeditor.org/
 [LOVE]: https://www.love2d.org/
 [dox]: http://karai17.github.io/Simple-Tiled-Implementation/
-[tut]: http://lua.space/gamedev/using-tiled-maps-in-love
 [MIT]: http://www.opensource.org/licenses/mit-license.html
 [paypal]: https://www.paypal.me/LandonManning

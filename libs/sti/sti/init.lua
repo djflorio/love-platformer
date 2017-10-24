@@ -7,19 +7,19 @@
 local STI = {
 	_LICENSE     = "MIT/X11",
 	_URL         = "https://github.com/karai17/Simple-Tiled-Implementation",
-	_VERSION     = "0.18.2.1",
+	_VERSION     = "0.18.1.0",
 	_DESCRIPTION = "Simple Tiled Implementation is a Tiled Map Editor library designed for the *awesome* LÖVE framework.",
 	cache        = {}
 }
 STI.__index = STI
 
-local cwd   = (...):gsub('%.init$', '') .. "."
-local utils = require(cwd .. "utils")
-local ceil  = math.ceil
-local floor = math.floor
-local lg    = require(cwd .. "graphics")
-local Map   = {}
-Map.__index = Map
+local cwd       = (...):gsub('%.init$', '') .. "."
+local utils      = require(cwd .. "utils")
+local ceil       = math.ceil
+local floor      = math.floor
+local lg         = require(cwd .. "graphics")
+local Map        = {}
+Map.__index      = Map
 
 local function new(map, plugins, ox, oy)
 	local dir = ""
@@ -55,7 +55,7 @@ end
 -- @param ox Offset of map on the X axis (in pixels)
 -- @param oy Offset of map on the Y axis (in pixels)
 -- @return table The loaded Map
-function STI.__call(_, map, plugins, ox, oy)
+function STI:__call(map, plugins, ox, oy)
 	return new(map, plugins, ox, oy)
 end
 
@@ -71,6 +71,7 @@ end
 -- @param plugins A list of plugins to load
 -- @param ox Offset of map on the X axis (in pixels)
 -- @param oy Offset of map on the Y axis (in pixels)
+-- @return nil
 function Map:init(path, plugins, ox, oy)
 	if type(plugins) == "table" then
 		self:loadPlugins(plugins)
@@ -95,16 +96,15 @@ function Map:init(path, plugins, ox, oy)
 		assert(tileset.image, "STI does not support Tile Collections.\nYou need to create a Texture Atlas.")
 
 		-- Cache images
-		if lg.isCreated then
-			local formatted_path = utils.format_path(path .. tileset.image)
-
-			if not STI.cache[formatted_path] then
-				utils.fix_transparent_color(tileset, formatted_path)
-				utils.cache_image(STI, formatted_path, tileset.image)
-			else
-				tileset.image = STI.cache[formatted_path]
-			end
+		local formatted_path = utils.format_path(path .. tileset.image)
+		if not STI.cache[formatted_path] then
+			utils.cache_image(STI, formatted_path)
 		end
+
+		-- Pull images from cache
+		tileset.image = STI.cache[formatted_path]
+
+		utils.fixTransparentColor(tileset)
 
 		gid = self:setTiles(i, tileset, gid)
 	end
@@ -117,6 +117,7 @@ end
 
 --- Load plugins
 -- @param plugins A list of plugins to load
+-- @return nil
 function Map:loadPlugins(plugins)
 	for _, plugin in ipairs(plugins) do
 		local pluginModulePath = cwd .. 'plugins.' .. plugin
@@ -204,6 +205,7 @@ end
 --- Create Layers
 -- @param layer Layer data
 -- @param path (Optional) Path to an Image Layer's image
+-- @return nil
 function Map:setLayer(layer, path)
 	if layer.encoding then
 		if layer.encoding == "base64" then
@@ -261,6 +263,7 @@ end
 
 --- Add Tiles to Tile Layer
 -- @param layer The Tile Layer
+-- @return nil
 function Map:setTileData(layer)
 	local i   = 1
 	local map = {}
@@ -283,6 +286,7 @@ end
 
 --- Add Objects to Layer
 -- @param layer The Object Layer
+-- @return nil
 function Map:setObjectData(layer)
 	for _, object in ipairs(layer.objects) do
 		object.layer            = layer
@@ -292,6 +296,7 @@ end
 
 --- Correct position and orientation of Objects in an Object Layer
 -- @param layer The Object Layer
+-- @return nil
 function Map:setObjectCoordinates(layer)
 	for _, object in ipairs(layer.objects) do
 		local x   = layer.x + object.x
@@ -342,6 +347,7 @@ end
 
 --- Batch Tiles in Tile Layer for improved draw speed
 -- @param layer The Tile Layer
+-- @return nil
 function Map:setSpriteBatches(layer)
 	local newBatch = lg.newSpriteBatch
 	local tileW    = self.tilewidth
@@ -390,7 +396,7 @@ function Map:setSpriteBatches(layer)
 						tileX = (x - y) * (tileW / 2) + tile.offset.x + layer.width * tileW / 2 - self.tilewidth / 2
 						tileY = (x + y - 2) * (tileH / 2) + tile.offset.y
 					end
-
+					
 					local tab = {
 						layer = layer,
 						gid   = tile.gid,
@@ -399,12 +405,12 @@ function Map:setSpriteBatches(layer)
 						r     = tile.r,
 						oy    = 0
 					}
-
+					
 					if batch then
 						tab.batch = batch
 						tab.id = batch:add(tile.quad, tileX, tileY, tile.r, tile.sx, tile.sy)
 					end
-
+					
 					self.tileInstances[tile.gid] = self.tileInstances[tile.gid] or {}
 					table.insert(self.tileInstances[tile.gid], tab)
 				end
@@ -443,7 +449,7 @@ function Map:setSpriteBatches(layer)
 
 						local rowH = tileH - (tileH - sideLen) / 2
 						tileY = (y - 1) * rowH + tile.offset.y
-
+						
 						local tab = {
 							layer = layer,
 							gid   = tile.gid,
@@ -452,12 +458,12 @@ function Map:setSpriteBatches(layer)
 							r     = tile.r,
 							oy    = 0
 						}
-
+						
 						if batch then
 							tab.batch = batch
 							tab.id = batch:add(tile.quad, tileX, tileY, tile.r, tile.sx, tile.sy)
 						end
-
+						
 						self.tileInstances[tile.gid] = self.tileInstances[tile.gid] or {}
 						table.insert(self.tileInstances[tile.gid], tab)
 					end
@@ -506,7 +512,7 @@ function Map:setSpriteBatches(layer)
 
 							local colW = tileW - (tileW - sideLen) / 2
 							tileX = (x - 1) * colW + tile.offset.x
-
+							
 							local tab = {
 								layer = layer,
 								gid   = tile.gid,
@@ -515,12 +521,12 @@ function Map:setSpriteBatches(layer)
 								r     = tile.r,
 								oy    = 0
 							}
-
+							
 							if batch then
 								tab.batch = batch
 								tab.id = batch:add(tile.quad, tileX, tileY, tile.r, tile.sx, tile.sy)
 							end
-
+							
 							self.tileInstances[tile.gid] = self.tileInstances[tile.gid] or {}
 							table.insert(self.tileInstances[tile.gid], tab)
 						end
@@ -541,6 +547,7 @@ end
 
 --- Batch Tiles in Object Layer for improved draw speed
 -- @param layer The Object Layer
+-- @return nil
 function Map:setObjectSpriteBatches(layer)
 	local newBatch = lg.newSpriteBatch
 	local tileW    = self.tilewidth
@@ -579,7 +586,7 @@ function Map:setObjectSpriteBatches(layer)
 				if tileR   > 0 then tileX = tileX + tileW end
 				if tileR   < 0 then tileY = tileY + tileH end
 			end
-
+			
 			local tab = {
 				layer = layer,
 				gid   = tile.gid,
@@ -588,12 +595,12 @@ function Map:setObjectSpriteBatches(layer)
 				r     = tileR,
 				oy    = oy
 			}
-
+			
 			if batch then
 				tab.batch = batch
 				tab.id = batch:add(tile.quad, tileX, tileY, tileR, tile.sx, tile.sy, 0, oy)
 			end
-
+			
 			self.tileInstances[tile.gid] = self.tileInstances[tile.gid] or {}
 			table.insert(self.tileInstances[tile.gid], tab)
 		end
@@ -649,6 +656,7 @@ end
 
 --- Remove a Layer from the Layer stack
 -- @param index Index or name of Layer to convert
+-- @return nil
 function Map:removeLayer(index)
 	local layer = assert(self.layers[index], "Layer not found: " .. index)
 
@@ -690,6 +698,7 @@ end
 
 --- Animate Tiles and update every Layer
 -- @param dt Delta Time
+-- @return nil
 function Map:update(dt)
 	for _, tile in pairs(self.tiles) do
 		local update = false
@@ -720,20 +729,11 @@ function Map:update(dt)
 end
 
 --- Draw every Layer
--- @param tx Translate on X
--- @param ty Translate on Y
--- @param sx Scale on X
--- @param sy Scale on Y
-function Map:draw(tx, ty, sx, sy)
+-- @return nil
+function Map:draw()
 	local current_canvas = lg.getCanvas()
 	lg.setCanvas(self.canvas)
 	lg.clear()
-
-	-- Scale map to 1.0 to draw onto canvas, this fixes tearing issues
-	-- Map is translated to correct position so the right section is drawn
-	lg.push()
-	lg.origin()
-	lg.translate(math.floor(tx or 0), math.floor(ty or 0))
 
 	for _, layer in ipairs(self.layers) do
 		if layer.visible and layer.opacity > 0 then
@@ -741,23 +741,17 @@ function Map:draw(tx, ty, sx, sy)
 		end
 	end
 
-	lg.pop()
-
-	-- Draw canvas at 0,0; this fixes scissoring issues
-	-- Map is scaled to correct scale so the right section is shown
+	lg.setCanvas(current_canvas)
 	lg.push()
 	lg.origin()
-	lg.scale(sx or 1, sy or sx or 1)
-
-	lg.setCanvas(current_canvas)
 	lg.draw(self.canvas)
-
 	lg.pop()
 end
 
 --- Draw an individual Layer
 -- @param layer The Layer to draw
-function Map.drawLayer(_, layer)
+-- @return nil
+function Map:drawLayer(layer)
 	local r,g,b,a = lg.getColor()
 	lg.setColor(r, g, b, a * layer.opacity)
 	layer:draw()
@@ -766,6 +760,7 @@ end
 
 --- Default draw function for Tile Layers
 -- @param layer The Tile Layer to draw
+-- @return nil
 function Map:drawTileLayer(layer)
 	if type(layer) == "string" or type(layer) == "number" then
 		layer = self.layers[layer]
@@ -780,6 +775,7 @@ end
 
 --- Default draw function for Object Layers
 -- @param layer The Object Layer to draw
+-- @return nil
 function Map:drawObjectLayer(layer)
 	if type(layer) == "string" or type(layer) == "number" then
 		layer = self.layers[layer]
@@ -850,6 +846,7 @@ end
 
 --- Default draw function for Image Layers
 -- @param layer The Image Layer to draw
+-- @return nil
 function Map:drawImageLayer(layer)
 	if type(layer) == "string" or type(layer) == "number" then
 		layer = self.layers[layer]
@@ -865,8 +862,9 @@ end
 --- Resize the drawable area of the Map
 -- @param w The new width of the drawable area (in pixels)
 -- @param h The new Height of the drawable area (in pixels)
+-- @return nil
 function Map:resize(w, h)
-	if lg.isCreated then
+	if lg.isCreated() then
 		w = w or lg.getWidth()
 		h = h or lg.getHeight()
 
@@ -1008,6 +1006,7 @@ end
 -- @return none
 function Map:swapTile(instance, tile)
 	-- Update sprite batch
+	
 	if instance.batch then
 		instance.batch:set(
 			instance.id,
