@@ -1,42 +1,44 @@
 -- Import our libraries
-bump = require 'libs.bump.bump'
-Gamestate = require 'libs.hump.gamestate'
+local Gamestate = require 'libs.hump.gamestate'
+local Class = require 'libs.hump.class'
+
+-- Import our base class
+local LevelBase = require 'gamestates.LevelBase'
 
 -- Import our Entity system
-local Entities = require 'entities.Entities'
-local Entity = require 'entities.Entity'
-
--- Create our Gamestate
-local gameLevel1 = {}
-
--- Import the Entities we build
 local Player = require 'entities.player'
-local Ground = require 'entities.ground'
+local camera = require 'libs.camera'
 
--- Declare a couple of important variables
 player = nil
-world = nil
+
+local gameLevel1 = Class{
+  __includes = LevelBase
+}
+
+function gameLevel1:init()
+  LevelBase.init(self, 'assets/levels/level_1.lua')
+end
 
 function gameLevel1:enter()
-  -- Game levels do need collisions
-  world = bump.newWorld(16) -- Create a world for bump to function in
-
-  -- Initialize our Entity system
-  Entities:enter()
-  player = Player(world, 16, 16)
-  ground_0 = Ground(world, 120, 360, 640, 16)
-  ground_1 = Ground(world, 0, 448, 640, 16)
-
-  -- Add instances of our entities to the Entity list
-  Entities:addMany({player, ground_0, ground_1})
+  player = Player(self.world, 32, 64)
+  LevelBase.Entities:add(player)
 end
 
 function gameLevel1:update(dt)
-  Entities:update(dt) -- Execute the update function for each Entity
+  self.map:update(dt) -- Remember, we inherited map from LevelBase
+  LevelBase.Entities:update(dt)
+  LevelBase.positionCamera(self, player, camera)
 end
 
 function gameLevel1:draw()
-  Entities:draw() -- Execute the draw function of each Entity
+  camera:set() -- Attach the camera before drawing the entities
+  self.map:draw()
+  LevelBase.Entities:draw()
+  camera:unset() -- Detatch after running to avoid weirdness
+end
+
+function gameLevel1:keypressed(key)
+  LevelBase:keypressed(key)
 end
 
 return gameLevel1
