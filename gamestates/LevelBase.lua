@@ -17,8 +17,8 @@ local LevelBase = Class{
     self.map:bump_init(self.world) -- Initialize the bump array for the map
 
     Entities:enter() -- Create the entities system.
-  end;
-  Entities = Entities; -- Make Entities a class variable for easy access.
+  end,
+  Entities = Entities, -- Make Entities a class variable for easy access.
   camera = camera
 }
 

@@ -11,6 +11,7 @@ local camera = require 'libs.camera'
 
 player = nil
 
+-- gameLevel1 extends LevelBase
 local gameLevel1 = Class{
   __includes = LevelBase
 }

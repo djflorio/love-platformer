@@ -1,4 +1,4 @@
-DEBUG = true
+DEBUG = false
 
 -- Pull in Gamestate from the HUMP library
 Gamestate = require 'libs.hump.gamestate'
