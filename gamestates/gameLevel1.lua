@@ -5,11 +5,12 @@ local Class = require 'libs.hump.class'
 -- Import our base class
 local LevelBase = require 'gamestates.LevelBase'
 
--- Import our Entity system
 local Player = require 'entities.player'
-local camera = require 'libs.camera'
+local Debug = require 'entities.debug'
+--local camera = require 'libs.camera'
 
 player = nil
+debug = nil
 
 -- gameLevel1 extends LevelBase
 local gameLevel1 = Class{
@@ -22,6 +23,7 @@ end
 
 function gameLevel1:enter()
   player = Player(self.world, 32, 64)
+  debug = Debug(player, 5, 5, 15)
   LevelBase.Entities:add(player)
 end
 
@@ -36,6 +38,7 @@ function gameLevel1:draw()
   self.map:draw(-camera.x, -camera.y)
   LevelBase.Entities:draw()
   camera:unset() -- Detatch after running to avoid weirdness
+  debug:draw()
 end
 
 function gameLevel1:keypressed(key)

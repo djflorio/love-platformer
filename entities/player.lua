@@ -83,21 +83,6 @@ end
 
 function player:draw()
   love.graphics.draw(self.img, self.x, self.y)
-  local s = 5
-  local ts = 15
-  if DEBUG then
-    love.graphics.print("xVelocity: " .. self.xVelocity, 5, s)
-    love.graphics.print("yVelocity: " .. self.yVelocity, 5, s + (1*ts))
-    love.graphics.print("acc: " .. self.acc, 5, s + (2*ts))
-    love.graphics.print("maxSpeed: " .. self.maxSpeed, 5, s + (3*ts))
-    love.graphics.print("friction: " .. self.friction, 5, s + (4*ts))
-    love.graphics.print("gravity: " .. self.gravity, 5, s + (5*ts))
-    love.graphics.print("isJumping: " .. tostring(self.isJumping), 5, s + (6*ts))
-    love.graphics.print("isGrounded: " .. tostring(self.isGrounded), 5, s + (7*ts))
-    love.graphics.print("hasReachedMax: " .. tostring(self.hasReachedMax), 5, s + (8*ts))
-    love.graphics.print("jumpAcc: " .. self.jumpAcc, 5, s + (9*ts))
-    love.graphics.print("jumpMaxSpeed: " .. self.jumpMaxSpeed, 5, s + (10*ts))
-  end
 end
 
 return player

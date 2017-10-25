@@ -16,11 +16,11 @@ function Entity:getRect()
 end
 
 function Entity:draw()
-
+  -- Not used, but here to avoid errors
 end
 
 function Entity:update(dt)
-
+  -- Not used, but here to avoid errors
 end
 
 return Entity
