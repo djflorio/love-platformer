@@ -33,7 +33,7 @@ end
 
 function gameLevel1:draw()
   camera:set() -- Attach the camera before drawing the entities
-  self.map:draw()
+  self.map:draw(-camera.x, -camera.y)
   LevelBase.Entities:draw()
   camera:unset() -- Detatch after running to avoid weirdness
 end
