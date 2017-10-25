@@ -56,6 +56,7 @@ function player:update(dt)
   if love.keyboard.isDown("up", "w") then
     if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax then
       self.yVelocity = self.yVelocity - self.jumpAcc * dt
+      self.isJumping = true
     elseif math.abs(self.yVelocity) > self.jumpMaxSpeed then
       self.hasReachedMax = true
     end
@@ -68,7 +69,7 @@ function player:update(dt)
 
   -- Move the player while testing for collisions
   self.x, self.y, collisions, len = self.world:move(self, goalX, goalY, self.collisionFilter)
-
+  self.isGrounded = false
   -- Loop through those collisions to see if anything important is happening
   for i, coll in ipairs(collisions) do
     if coll.touch.y > goalY then -- We touched below
@@ -77,6 +78,7 @@ function player:update(dt)
     elseif coll.normal.y < 0 then
       self.hasReachedMax = false
       self.isGrounded = true
+      self.isJumping = false
     end
   end
 end
