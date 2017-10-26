@@ -23,6 +23,9 @@ function player:init(world, x, y)
   self.hasReachedMax = false
   self.jumpAcc = 500
   self.jumpMaxSpeed = 11
+  self.jumpsAllowed = 1
+
+  self.jumpButtonPressed = false
 
   self.world:add(self, self:getRect())
 end
@@ -53,14 +56,14 @@ function player:update(dt)
     self.xVelocity = self.xVelocity + self.acc * dt
   end
 
+  self.jumpButtonPressed = false
   if love.keyboard.isDown("up", "w") then
-    if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax then
-      self.yVelocity = self.yVelocity - self.jumpAcc * dt
-      self.isJumping = true
-    elseif math.abs(self.yVelocity) > self.jumpMaxSpeed then
-      self.hasReachedMax = true
+    self.jumpButtonPressed = true
+    if (self.yVelocity >= 0 and self.isGrounded) then
+      self.yVelocity = -5
+    elseif (self.yVelocity < 0 and not self.isGrounded) then
+      self.yVelocity = -5
     end
-    self.isGrounded = false
   end
 
   -- The goal locations, which are used for collision detection
