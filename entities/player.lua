@@ -22,10 +22,8 @@ function player:init(world, x, y)
   self.isGrounded = false
   self.hasReachedMax = false
   self.jumpAcc = 500
-  self.jumpMaxSpeed = 11
+  self.jumpMaxSpeed = 15
   self.jumpsAllowed = 1
-
-  self.jumpButtonPressed = false
 
   self.world:add(self, self:getRect())
 end
@@ -56,13 +54,15 @@ function player:update(dt)
     self.xVelocity = self.xVelocity + self.acc * dt
   end
 
-  self.jumpButtonPressed = false
   if love.keyboard.isDown("up", "w") then
-    self.jumpButtonPressed = true
+    if math.abs(self.yVelocity) > self.jumpMaxSpeed then
+      print("OHHHH")
+      self.hasReachedMax = true
+    end
     if (self.yVelocity >= 0 and self.isGrounded) then
-      self.yVelocity = -5
-    elseif (self.yVelocity < 0 and not self.isGrounded) then
-      self.yVelocity = -5
+      self.yVelocity = self.yVelocity - self.jumpAcc * dt
+    elseif (self.yVelocity < 0 and not self.isGrounded and not self.hasReachedMax) then
+      self.yVelocity = self.yVelocity - self.jumpAcc * dt
     end
   end
 
